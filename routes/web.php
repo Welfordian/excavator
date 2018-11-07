@@ -56,16 +56,17 @@ Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function() {
     });
 });
 
+
+/**
+ * Dynamic Page Routes
+ */
+
 $pages = App\Page::all();
 
 foreach($pages as $page) {
     $pageMiddleware = [];
 
     foreach ($page->middlewares as $middleware) {
-        $logic = generateMiddleware($middleware);
-
-        file_put_contents(base_path() . '/app/Http/Middleware/' . $middleware->name . '.php', $logic);
-
         $pageMiddleware[] = 'App\\Http\\Middleware\\' . $middleware->name;
     }
 
@@ -98,37 +99,7 @@ foreach($pages as $page) {
             $data[strtolower(str_replace('App\\', '', $with)) . "s"] = app('App\\' . $with)::all();
         }
 
-        if ($page->layout) {
-            file_put_contents(base_path() . "/resources/views/layouts/{$page->getLayout->name}.blade.php", $page->getLayout->template);
-
-            file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', "@extends('layouts.{$page->getLayout->name}')\n\n" . $page->template);
-        } else {
-            file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', $page->template);
-        }
-
         return view($file_name, $data);
 
     })->middleware($pageMiddleware);
-}
-
-
-
-
-function generateMiddleware($middleware) {
-    return <<<CLASS
-<?php
-
-namespace App\Http\Middleware;
-
-use App;
-use Closure;
-
-class {$middleware->name}
-{
-    public function handle(\$request, Closure \$next)
-    {
-        {$middleware->logic}
-    }
-}
-CLASS;
 }

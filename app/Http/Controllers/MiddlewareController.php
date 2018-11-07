@@ -19,6 +19,8 @@ class MiddlewareController extends Controller
     {
         $middleware->update($request->all());
 
+        $this->updateMiddlewareClass($middleware);
+
         return redirect()->route('middleware.showEdit', $middleware->id);
     }
 
@@ -37,6 +39,8 @@ class MiddlewareController extends Controller
 
         $middleware->save();
 
+        $this->updateMiddlewareClass($middleware);
+
         return redirect()->route('middleware.showEdit', ['middleware' => $middleware->id]);
     }
 
@@ -45,5 +49,27 @@ class MiddlewareController extends Controller
         $routes = Page::all();
 
         return view('middleware.edit', ['middleware' => $middleware, 'routes' => $routes]);
+    }
+
+    public function updateMiddlewareClass(Middleware $middleware)
+    {
+        $logic = <<<CLASS
+<?php
+
+namespace App\Http\Middleware;
+
+use App;
+use Closure;
+
+class {$middleware->name}
+{
+    public function handle(\$request, Closure \$next)
+    {
+        {$middleware->logic}
+    }
+}
+CLASS;
+
+        file_put_contents(base_path() . '/app/Http/Middleware/' . $middleware->name . '.php', $logic);
     }
 }

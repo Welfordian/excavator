@@ -42,6 +42,8 @@ class PagesController extends Controller
 
         $page->update(['with' => (is_null($request->get('with')) ? [] : explode(',', $request->get('with')))]);
 
+        $this->updatePageTemplate($page);
+
         return redirect()->route('pages.showEdit', $page->id);
     }
 
@@ -55,6 +57,8 @@ class PagesController extends Controller
         $page->with = (is_null($request->get('with')) ? [] : explode(',', $request->get('with')));
 
         $page->save();
+
+        $this->updatePageTemplate($page);
 
         return redirect()->route('pages.showEdit', $page->id);
     }
@@ -70,5 +74,22 @@ class PagesController extends Controller
         });
 
         return $models->values();
+    }
+
+    public function updatePageTemplate(Page $page)
+    {
+        $uri = preg_replace('/:(.*?)(?=\})/', '', $page->uri);
+
+        $file_name = str_replace('{', '', $uri);
+        $file_name = str_replace('}', '', $file_name);
+        $file_name = str_replace('/', '_', $file_name);
+
+        if ($page->layout) {
+            file_put_contents(base_path() . "/resources/views/layouts/{$page->getLayout->name}.blade.php", $page->getLayout->template);
+
+            file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', "@extends('layouts.{$page->getLayout->name}')\n\n" . $page->template);
+        } else {
+            file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', $page->template);
+        }
     }
 }
