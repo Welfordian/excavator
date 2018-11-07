@@ -6,7 +6,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header flex space-between items-center">
-                        <p>Create Middleware</p>
+                        <p>Update Layout</p>
                     </div>
 
                     <div class="card-body">
@@ -19,7 +19,7 @@
 
                             @csrf
 
-                            <button class="btn btn-success mt-2">Update</button>
+                            <button class="btn btn-success mt-2">Update Layout</button>
                         </form>
                     </div>
                 </div>

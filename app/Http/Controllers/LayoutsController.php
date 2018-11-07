@@ -28,6 +28,8 @@ class LayoutsController extends Controller
     {
         $layout->update($request->all());
 
+        file_put_contents(base_path() . "/resources/views/layouts/{$layout->name}.blade.php", $layout->template);
+
         return redirect()->route('layouts.showEdit', ['layout' => $layout->id]);
     }
 
@@ -36,6 +38,8 @@ class LayoutsController extends Controller
         $layout = new Layout($request->all());
 
         $layout->save();
+
+        file_put_contents(base_path() . "/resources/views/layouts/{$layout->name}.blade.php", $layout->template);
 
         return redirect()->route('layouts.showEdit', ['layout' => $layout->id]);
     }

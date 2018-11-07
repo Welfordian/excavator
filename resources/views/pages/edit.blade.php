@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Editing {{ $page->uri }}</div>
+                    <div class="card-header">Update Page</div>
 
                     <div class="card-body">
                         <form method="POST">
@@ -24,8 +24,7 @@
 
                             @csrf
 
-
-                            <button class="btn btn-success mt-2">Update</button>
+                            <button class="btn btn-success mt-2">Update Page</button>
                         </form>
                     </div>
                 </div>

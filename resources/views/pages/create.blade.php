@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">New Page</div>
+                    <div class="card-header">Create Page</div>
 
                     <div class="card-body">
                         <form method="POST">
@@ -24,8 +24,7 @@
 
                             @csrf
 
-
-                            <button class="btn btn-success mt-2">Create</button>
+                            <button class="btn btn-success mt-2">Create Page</button>
                         </form>
                     </div>
                 </div>

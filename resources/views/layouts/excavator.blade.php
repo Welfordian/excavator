@@ -1,5 +1,0 @@
-header
-
-@yield('content')
-
-footer

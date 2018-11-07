@@ -85,8 +85,6 @@ class PagesController extends Controller
         $file_name = str_replace('/', '_', $file_name);
 
         if ($page->layout) {
-            file_put_contents(base_path() . "/resources/views/layouts/{$page->getLayout->name}.blade.php", $page->getLayout->template);
-
             file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', "@extends('layouts.{$page->getLayout->name}')\n\n" . $page->template);
         } else {
             file_put_contents ( base_path() . "/resources/views/" . $file_name . '.blade.php', $page->template);
