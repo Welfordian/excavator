@@ -73,9 +73,6 @@ foreach($pages as $page) {
     preg_match_all('/(?<=\{)(.*?)(?=\:)/', $page->uri, $models);
     preg_match_all('/(?<=\:)(.*?)(?=\})/', $page->uri, $attributes);
 
-    $models = $models[0];
-    $attributes = $attributes[0];
-
     $uri = preg_replace('/:(.*?)(?=\})/', '', $page->uri);
 
     Route::get($uri, function() use($page, $uri, $models, $attributes) {
@@ -84,15 +81,14 @@ foreach($pages as $page) {
 
         foreach(func_get_args() as $key => $attribute) {
             try {
-                $model = app('App\\' . ucfirst($models[$key]));
-                $data[$models[$key]] = $model::where($attributes[$key], $attribute)->firstOrFail();
+                $model = app('App\\' . ucfirst($models[0][$key]));
+                $data[$models[0][$key]] = $model::where($attributes[0][$key], $attribute)->firstOrFail();
             } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
                 return abort(404);
             }
         }
 
-        $file_name = str_replace('{', '', $uri);
-        $file_name = str_replace('}', '', $file_name);
+        $file_name = str_replace(['{', '}'], '', $uri);
         $file_name = str_replace('/', '_', $file_name);
 
         foreach($page->with as $with) {
