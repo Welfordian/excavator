@@ -44,6 +44,11 @@ class PagesController extends Controller
 
         $this->updatePageTemplate($page);
 
+        session()->flash('notification', [
+            'message' => 'Page Updated!',
+            'type' => 'success',
+        ]);
+
         return redirect()->route('pages.showEdit', $page->id);
     }
 
@@ -59,6 +64,11 @@ class PagesController extends Controller
         $page->save();
 
         $this->updatePageTemplate($page);
+
+        session()->flash('notification', [
+            'message' => 'Page Created!',
+            'type' => 'success',
+        ]);
 
         return redirect()->route('pages.showEdit', $page->id);
     }

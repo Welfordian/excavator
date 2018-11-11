@@ -6,4 +6,10 @@
 //  */
 //
 
- require('./bootstrap');
+require('./bootstrap');
+
+import migrations from './migrations';
+
+window.app = {
+    migrations
+};

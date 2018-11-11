@@ -13884,8 +13884,11 @@ module.exports = __webpack_require__(43);
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__migrations__ = __webpack_require__(48);
 //
 // /**
 //  * First we will load all of this project's JavaScript dependencies which
@@ -13895,6 +13898,12 @@ module.exports = __webpack_require__(43);
 //
 
 __webpack_require__(13);
+
+
+
+window.app = {
+    migrations: __WEBPACK_IMPORTED_MODULE_0__migrations__["a" /* default */]
+};
 
 /***/ }),
 /* 13 */
@@ -35950,6 +35959,336 @@ module.exports = function spread(callback) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Migrations = function Migrations(config) {
+    _classCallCheck(this, Migrations);
+
+    this.create = __webpack_require__(49).default(config);
+    this.update = __webpack_require__(50).default(config);
+    this.drop = __webpack_require__(51).default(config);
+
+    $('form').bind('submit', function () {
+        $(this).find(':input').prop('disabled', false);
+    });
+
+    $(document).on('click', '#add_incrementing_id', function (e) {
+        e.preventDefault();
+    });
+
+    $(document).on('click', '#add_timestamps', function (e) {
+        e.preventDefault();
+    });
+
+    $(document).on('change', '.migration_type', function () {
+        var selected = $(this).find(':selected');
+
+        if (selected.attr('data-default-allowed') === "true") {
+            $(this).parent().parent().find('.migration_default_value').prop('disabled', false);
+        } else {
+            $(this).parent().parent().find('.migration_default_value').prop('disabled', true);
+        }
+    });
+
+    $(document).on('click', '.remove_migration_row', function () {
+        var type = $('.pane-link.active').attr('href').replace('#pills-', '');
+
+        $(this).parent().parent().remove();
+
+        if ($('#migration_rows-' + type).find('.migration_row').length === 0) {
+            $('.create_migration').addClass('hidden');
+        }
+    });
+
+    $(document).on('click', '.pane-link', function () {
+        var type = $('.pane-link.active').attr('href').replace('#pills-', '');
+
+        $('[name="migration_method"]').val(type);
+
+        if (type === 'create') {
+            if ($('#migration_rows-create').find('.migration_row').length === 0) {
+                $('.create_migration').addClass('hidden');
+            } else {
+                $('.create_migration').removeClass('hidden');
+            }
+        }
+
+        if (type === 'update') {
+            if ($('#migration_rows-update').find('.migration_row').length === 0) {
+                $('.create_migration').addClass('hidden');
+            } else {
+                $('.create_migration').removeClass('hidden');
+            }
+        }
+
+        if (type === 'drop') {
+            $('.create_migration').removeClass('hidden');
+        }
+
+        window.location.hash = type;
+    });
+
+    if (!/(update):(.*)/.test(window.location.hash)) {
+        if (window.location.hash === '#create' || window.location.hash === '#update' || window.location.hash === '#drop') {
+            $('#pills-' + window.location.hash.replace('#', '') + '-tab').click();
+        }
+    }
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (function (config) {
+    return new Migrations(config);
+});
+
+/***/ }),
+/* 49 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony default export */ __webpack_exports__["default"] = (function (_ref) {
+    var all_tables = _ref.all_tables;
+
+    return function () {
+        var index = 0;
+
+        $(document).on('click', '#add_migration_row-create', function (e) {
+            e.preventDefault();
+
+            var new_migration_row = $('#migration_row_template').clone();
+
+            $(new_migration_row).find('.migration_type').attr('name', 'migration_rows[' + index + '][migration_type]');
+            $(new_migration_row).find('.migration_name').attr('name', 'migration_rows[' + index + '][migration_name]');
+            $(new_migration_row).find('.migration_default_value').attr('name', 'migration_rows[' + index + '][migration_default_value]');
+
+            $('#migration_rows-create').append(new_migration_row.html());
+
+            $('.create_migration').removeClass('hidden');
+
+            index++;
+        });
+
+        $(document).on('keyup', '.migration_table_name-create', function () {
+            var table_name = $(this).val().trim();
+
+            if (/^\w+$/.test(table_name)) {
+                if (table_name.length) {
+                    $(this).removeClass('is-invalid');
+                    $(this).addClass('is-valid');
+                } else {
+                    $(this).removeClass('is-valid');
+                    $(this).addClass('is-invalid');
+                }
+
+                if (all_tables.indexOf(table_name) !== -1) {
+                    $(this).removeClass('is-valid');
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $(this).addClass('is-valid');
+                }
+            } else {
+                $(this).removeClass('is-valid');
+                $(this).addClass('is-invalid');
+            }
+        });
+
+        $(document).on('keyup', '.migration_name-create', function () {
+            var user_input = $(this).val().trim();
+
+            if (user_input.length) {
+                if (/^\w+$/.test(user_input)) {
+                    $(this).removeClass('is-invalid');
+                    $(this).addClass('is-valid');
+
+                    if (/(?<=create_)(.*?)(?=_table)/.test(user_input)) {
+                        var table_name = /(?<=create_)(.*?)(?=_table)/.exec(user_input)[0];
+
+                        if (all_tables.indexOf(table_name) !== -1) {
+                            $(this).addClass('is-invalid');
+                        } else {
+                            $(this).addClass('is-valid');
+                        }
+
+                        $('.migration_table_name-create').val(table_name);
+                        $('.migration_table_name-create').trigger('keyup');
+                        $('.migration_table_name-create').prop('readonly', true);
+                    } else {
+                        $('.migration_table_name-create').prop('readonly', false);
+                    }
+                } else {
+                    $(this).removeClass('is-valid');
+                    $(this).addClass('is-invalid');
+                }
+            } else {
+                $(this).addClass('is-invalid');
+                $('.migration_table_name-create').prop('readonly', false);
+            }
+        });
+
+        return this;
+    };
+});
+
+/***/ }),
+/* 50 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MigrationUpdate = function () {
+    function MigrationUpdate(_ref) {
+        var all_tables = _ref.all_tables,
+            table_columns = _ref.table_columns;
+
+        _classCallCheck(this, MigrationUpdate);
+
+        var self = this;
+
+        if (/(update):(.*)/.test(window.location.hash)) {
+            var hash = window.location.hash;
+            $('#pills-update-tab').click();
+            $('.migration_table_name-update').find('[value="' + /(update):(.*)/.exec(hash.replace('#', ''))[2] + '"]').attr('selected', 'selected');
+        }
+
+        this.index = 0;
+        this.all_tables = all_tables;
+        this.table_columns = table_columns;
+
+        this.typeMap = {
+            'int': 'integer',
+            'string': 'string',
+            'varchar': 'string',
+            'timestamp': 'timestamp'
+        };
+
+        this.renderTableColumns();
+
+        return function () {
+            $(document).on('click', '#add_migration_row-update', function (e) {
+                e.preventDefault();
+
+                self.addMigrationRow();
+            });
+
+            $(document).on('keyup', '.migration_name-update', function () {
+                var table_name = false;
+                var user_input = $(this).val();
+
+                if (/(?<=from_).*/.test(user_input)) {
+                    table_name = /(?<=from_).*/.exec(user_input)[0];
+                }
+
+                if (/(?<=from_)(.*?)(?=_table)/.test(user_input)) {
+                    table_name = /(?<=from_)(.*?)(?=_table)/.exec(user_input)[0];
+                }
+
+                if (/(?<=to_).*/.test($(this).val())) {
+                    table_name = /(?<=to_).*/.exec(user_input)[0];
+                }
+
+                if (/(?<=to_)(.*?)(?=_table)/.test(user_input)) {
+                    table_name = /(?<=to_)(.*?)(?=_table)/.exec(user_input)[0];
+                }
+
+                if (table_name) {
+                    if ($('.migration_table_name-update').find('[value="' + table_name + '"]').length) {
+                        $('.migration_table_name-update').val(table_name);
+                        $('.migration_table_name-update').prop('disabled', true);
+                    } else {
+                        $('.migration_table_name-update').prop('disabled', false);
+                    }
+                } else {
+                    $('.migration_table_name-update').prop('disabled', false);
+                }
+            });
+
+            $(document).on('change', '.migration_table_name-update', function () {
+                $('#migration_rows-update').html("");
+
+                window.location.hash = "update:" + $('.migration_table_name-update').find(':selected').val();
+
+                self.renderTableColumns();
+            });
+
+            return this;
+        };
+    }
+
+    _createClass(MigrationUpdate, [{
+        key: 'renderTableColumns',
+        value: function renderTableColumns() {
+            var _this = this;
+
+            var selected = $('.migration_table_name-update').find(':selected').val();
+
+            Object.keys(this.table_columns[selected]).forEach(function (key) {
+                _this.addMigrationRow({
+                    migration_type: _this.table_columns[selected][key]['type'],
+                    migration_name: key,
+                    migration_default_value: _this.table_columns[selected][key]['default']
+                });
+            });
+        }
+    }, {
+        key: 'addMigrationRow',
+        value: function addMigrationRow() {
+            var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+            var new_migration_row = $('#migration_row_template').clone();
+
+            if (values) {
+                console.log(values);
+                $(new_migration_row).find('.migration_type').attr('name', 'migration_rows[' + this.index + '][migration_type]').find('[value="' + this.typeMap[values.migration_type] + '"]').attr('selected', 'selected');
+                $(new_migration_row).find('.migration_name').attr('name', 'migration_rows[' + this.index + '][migration_name]').attr('value', values.migration_name);
+                $(new_migration_row).find('.migration_default_value').attr('name', 'migration_rows[' + this.index + '][migration_default_value]').attr('value', values.migration_default_value);
+            } else {
+                $(new_migration_row).find('.migration_type').attr('name', 'migration_rows[' + this.index + '][migration_type]');
+                $(new_migration_row).find('.migration_name').attr('name', 'migration_rows[' + this.index + '][migration_name]');
+                $(new_migration_row).find('.migration_default_value').attr('name', 'migration_rows[' + this.index + '][migration_default_value]');
+            }
+
+            $('#migration_rows-update').append(new_migration_row.html());
+
+            $('.create_migration').removeClass('hidden');
+
+            this.index++;
+        }
+    }]);
+
+    return MigrationUpdate;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (function (config) {
+    return new MigrationUpdate(config);
+});
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+    return function () {
+        var index = 0;
+
+        return this;
+    };
+});
 
 /***/ })
 /******/ ]);

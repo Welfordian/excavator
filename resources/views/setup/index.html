@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Setup - Excavator</title>
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-j8y0ITrvFafF4EkV1mPW0BKm6dp3c+J9Fky22Man50Ofxo2wNe5pT1oZejDH9/Dt" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="app">
+
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header flex space-between items-center">
+                        <p class="mb-0">Excavator Setup</p>
+                    </div>
+
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="APP_NAME">App Name</label>
+                                <input type="text" class="form-control" id="APP_NAME" name="APP_NAME=" placeholder="e.g. Excavator" required/>
+                            </div>
+
+                            <input type="hidden" name="APP_ENV=" value="local" />
+                            <input type="hidden" name="APP_KEY=" value="" />
+                            <input type="hidden" name="APP_DEBUG=" value="true" />
+                            <input type="hidden" name="LOG_CHANNEL" value="slack" />
+
+                            <div class="form-group">
+                                <label for="APP_URL">App URL</label>
+                                <input type="text" class="form-control" id="APP_URL" name="APP_URL=" placeholder="e.g. Excavator" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_CONNECTION">Database Connection</label>
+                                <select class="form-control" id="DB_CONNECTION" name="DB_CONNECTION=" required>
+                                    <option value="mysql">MySQL</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_HOST">Database Host</label>
+                                <input type="text" class="form-control" id="DB_HOST" name="DB_HOST=" placeholder="e.g. 127.0.0.1" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_PORT">Database Port</label>
+                                <input type="text" class="form-control" id="DB_PORT" name="DB_PORT=" value="3306" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_DATABASE">Database Name</label>
+                                <input type="text" class="form-control" id="DB_DATABASE" name="DB_DATABASE=" placeholder="e.g. excavator" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_USERNAME">Database Username</label>
+                                <input type="text" class="form-control" id="DB_USERNAME" name="DB_USERNAME=" placeholder="e.g. not_root" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DB_PASSWORD">Database Host</label>
+                                <input type="password" class="form-control" id="DB_PASSWORD" name="DB_PASSWORD="/>
+                            </div>
+
+                            <button class="btn btn-success">Save Configuration Details</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+    <script>
+        $(() => {
+           $('#APP_URL').attr('placeholder', `${window.location.protocol}//${window.location.host}`);
+        });
+    </script>
+</div>
+</body>
+</html>

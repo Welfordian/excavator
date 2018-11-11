@@ -20,7 +20,7 @@ class Page extends Model
         $middlewares = Middleware::all();
 
         return $middlewares->filter(function($middleware) {
-           return in_array($this->id, $middleware->routes);
+            return in_array($this->id, $middleware->routes);
         });
     }
 

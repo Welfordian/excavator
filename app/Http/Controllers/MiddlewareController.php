@@ -21,6 +21,11 @@ class MiddlewareController extends Controller
 
         $this->updateMiddlewareClass($middleware);
 
+        session()->flash('notification', [
+            'message' => 'Middleware Updated!',
+            'type' => 'success',
+        ]);
+
         return redirect()->route('middleware.showEdit', $middleware->id);
     }
 
@@ -33,13 +38,16 @@ class MiddlewareController extends Controller
 
     public function create(Request $request)
     {
-        $middleware = (new Middleware($request->except('routes')));
-
-        $middleware->routes = json_encode($request->get('routes'));
+        $middleware = (new Middleware($request->all()));
 
         $middleware->save();
 
         $this->updateMiddlewareClass($middleware);
+
+        session()->flash('notification', [
+            'message' => 'Middleware Created!',
+            'type' => 'success',
+        ]);
 
         return redirect()->route('middleware.showEdit', ['middleware' => $middleware->id]);
     }

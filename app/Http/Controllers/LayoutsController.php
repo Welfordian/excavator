@@ -30,6 +30,11 @@ class LayoutsController extends Controller
 
         file_put_contents(base_path() . "/resources/views/layouts/{$layout->name}.blade.php", $layout->template);
 
+        session()->flash('notification', [
+            'message' => 'Layout Updated!',
+            'type' => 'success',
+        ]);
+
         return redirect()->route('layouts.showEdit', ['layout' => $layout->id]);
     }
 
@@ -40,6 +45,11 @@ class LayoutsController extends Controller
         $layout->save();
 
         file_put_contents(base_path() . "/resources/views/layouts/{$layout->name}.blade.php", $layout->template);
+
+        session()->flash('notification', [
+            'message' => 'Layout Created!',
+            'type' => 'success',
+        ]);
 
         return redirect()->route('layouts.showEdit', ['layout' => $layout->id]);
     }

@@ -52,6 +52,11 @@ class ResourcesController extends Controller
 
         $resource->save();
 
+        session()->flash('notification', [
+            'message' => 'Resource Created!',
+            'type' => 'success',
+        ]);
+
         return redirect()->route('resources.showEdit', ['resource' => $resource->id]);
     }
 
@@ -60,6 +65,11 @@ class ResourcesController extends Controller
         $resource->update([
             'name' => $request->get('name'),
             'secure' => $request->get('secure') === 'on' ? true : false
+        ]);
+
+        session()->flash('notification', [
+            'message' => 'Resourcevs Updated!',
+            'type' => 'success',
         ]);
 
         return redirect()->back();

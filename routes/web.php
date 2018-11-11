@@ -11,6 +11,8 @@
 |
 */
 
+require_once(base_path() . '/env_check.php');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -20,6 +22,8 @@ Auth::routes();
 Route::get('/resource/{uuid}', ['uses' => 'ResourcesController@download', 'as' => 'resources.download']);
 
 Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function() {
+    Route::get('/', ['uses' => 'AdminController@index', 'as' => 'admin.index']);
+
     Route::get('/models', ['uses' => 'PagesController@listModels', 'as' => 'listModels']);
     Route::get('/routes', ['uses' => 'MiddlewareController@listRoutes', 'as' => 'listRoutes']);
 
@@ -54,8 +58,50 @@ Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function() {
        Route::get('{middleware}', ['uses' => 'MiddlewareController@showEdit', 'as' => 'middleware.showEdit']);
        Route::post('{middleware}', ['uses' => 'MiddlewareController@update', 'as' => 'middleware.update']);
     });
+
+    Route::group(['prefix' => 'migrations'], function () {
+       Route::get('/', ['uses' => 'MigrationsController@show', 'as' => 'migrations.show']);
+       Route::get('/create', ['uses' => 'MigrationsController@showCreate', 'as' => 'migrations.showCreate']);
+       Route::post('/create', ['uses' => 'MigrationsController@create', 'as' => 'migrations.create']);
+       Route::get('{migration}', ['uses' => 'MigrationsController@showEdit', 'as' => 'migrations.showEdit']);
+    });
 });
 
+/**
+ * Dynamic Model Routes
+ */
+$internalTables = ['pages', 'layouts', 'user_migrations', 'middlewares', 'resources', 'migrations', 'password_resets'];
+
+$tables = \App\UserMigration::all()->pluck('table_name')->push('users');
+
+foreach($tables as $table) {
+    Route::get('/admin/' . $table, function (\Illuminate\Http\Request $request) use ($table) {
+       $model_name = (preg_replace('/s$/', '', str_replace(' ', '', ucwords(str_replace('_', ' ', $table)))));
+       $model = app()->make('App\\' . $model_name);
+
+       return app()->make('App\\Http\\Controllers\\DynamicModelController')->all($model::all(), $table, $request);
+    });
+
+    Route::post('/admin/' . $table. '/create', function(\Illuminate\Http\Request $request) use ($table) {
+        $model_name = (preg_replace('/s$/', '', str_replace(' ', '', ucwords(str_replace('_', ' ', $table)))));
+        $model = app()->make('App\\' . $model_name);
+
+        return app()->make('App\\Http\\Controllers\\DynamicModelController')->create($model, $table, $request);
+    });
+
+    Route::get('/admin/' . $table . '/create', function (\Illuminate\Http\Request $request) use ($table) {
+        return app()->make('App\\Http\\Controllers\\DynamicModelController')->showCreate($table, $request);
+    });
+
+    Route::get('/admin/' . $table . '/{id}', function ($id, \Illuminate\Http\Request $request) use ($table) {
+        $model_name = (preg_replace('/s$/', '', str_replace(' ', '', ucwords(str_replace('_', ' ', $table)))));
+        $model = app()->make('App\\' . $model_name);
+
+        $model = $model::find($id);
+
+        return app()->make('App\\Http\\Controllers\\DynamicModelController')->showUpdate($table, $model, $request);
+    });
+}
 
 /**
  * Dynamic Page Routes
