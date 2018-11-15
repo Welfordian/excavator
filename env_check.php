@@ -24,3 +24,30 @@ if (!file_exists(base_path() . '/.env')) {
         die();
     }
 }
+
+if (\App\User::all()->count() === 0) {
+    $error = false;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (request()->has('name') && request()->has('email') && request()->has('password') && request()->has('repeat_password')) {
+            if (request()->get('password') === request()->get('repeat_password')) {
+                $user = new \App\User();
+
+                $user->name = request()->get('name');
+                $user->email = request()->get('email');
+                $user->password = \Illuminate\Support\Facades\Hash::make(request()->get('password'));
+
+                $user->save();
+
+                header('Location: /login');
+            } else {
+                $error = 'Passwords do not match.';
+            }
+        } else {
+            $error = 'Please complete all fields.';
+        }
+    }
+
+    echo view('setup.account', ['error' => $error]);
+
+    die();
+}
